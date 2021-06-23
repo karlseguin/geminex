@@ -19,8 +19,8 @@ defmodule Geminex.Router do
 			false ->
 				quote do
 					defp fast_match(unquote(path), conn, params) do
-						with %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, unquote(action)),
-						     %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, :"*")
+						with %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, :"*"),
+						     %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, unquote(action))
 						do
 							unquote(controller).unquote(action)(conn, params)
 						else
@@ -38,8 +38,8 @@ defmodule Geminex.Router do
 		quote location: :keep do
 			defp parts_match(unquote(match), conn, params) do
 				params = Map.merge(conn.params, unquote({:%{}, [], params}))
-				with %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, unquote(action)),
-				     %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, :"*")
+				with %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, :"*"),
+				     %{halt: false} = conn <- unquote(controller).__geminex_plugs(conn, unquote(action))
 				do
 					unquote(controller).unquote(action)(conn, params)
 				else

@@ -18,7 +18,7 @@ defmodule Geminex.Tests.Integration do
 	end
 
 	test "halt plugs" do
-		request("/roles/halt_plug") |> assert_meta("halt-0")
-		request("/roles/halt_plug2") |> assert_meta("halt-16")
+		request("/roles/halt_plug") |> assert_meta("halt-1")
+		request("/roles/halt_plug2") |> assert_meta("halt-17")
 	end
 end
