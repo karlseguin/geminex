@@ -12,7 +12,13 @@ defmodule Geminex.Tests.Integration do
 	end
 
 	test "plugs" do
-		request("/roles/cp") |> assert_body("roles-cp-10")
-		request("/roles/cap") |> assert_body("roles-cap-30")
+		request("/roles/cp") |> assert_body("roles-cp-1")
+		request("/roles/cap") |> assert_body("roles-cap-3")
+		request("/roles/2cap") |> assert_body("roles-2cap-13")
+	end
+
+	test "halt plugs" do
+		request("/roles/halt_plug") |> assert_meta("halt-0")
+		request("/roles/halt_plug2") |> assert_meta("halt-16")
 	end
 end

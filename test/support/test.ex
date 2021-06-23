@@ -45,7 +45,7 @@ defmodule Geminex.Tests do
 	defp parse_response(data) do
 		{status, data} = Integer.parse(data)
 		case status < 20 || status > 29 do
-			true -> %{status: status, meta: String.trim_trailing(data, "\r\n")}
+			true -> %{status: status, meta: String.trim(data)}
 			false ->
 				[header, body] = String.split(data, "\n", parts: 2)
 				%{status: status, meta: String.trim(header), body: body}

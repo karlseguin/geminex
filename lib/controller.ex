@@ -18,10 +18,11 @@ defmodule Geminex.Controller do
 					def __geminex_plugs(conn, unquote(action)), do: unquote(mod).call(conn, unquote(opts))
 				end
 			{action, plugs} ->
+				plugs = Enum.reverse(plugs)
 				quote location: :keep do
 					def __geminex_plugs(conn, unquote(action)) do
 						Enum.reduce_while(unquote(plugs), conn, fn {mod, opts}, conn ->
-							conn = apply(mod, :call, [opts])
+							conn = apply(mod, :call, [conn, opts])
 							case conn.halt do
 								true -> {:halt, conn}
 								false -> {:cont, conn}
@@ -53,7 +54,7 @@ defmodule Geminex.Controller do
 		end)
 	end
 
-	defmacro plug(_plug, {:when, _, opts}) do
+	defmacro plug(_plug, {:when, _, _opts}) do
 		raise "
 			Plug condition can only be in the form of `when action $op $action` where
 			$op can be `=` or `in`, and $action can be a single atom or a list of atoms

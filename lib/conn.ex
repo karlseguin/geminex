@@ -37,6 +37,13 @@ defmodule Geminex.Conn do
 		end
 	end
 
+	def halt(conn, status, meta) do
+		%Conn{conn |
+			halt: true,
+			response: response(conn.response, status: status, meta: meta)
+		}
+	end
+
 	def assign(conn, key, value) do
 		put_in(conn.assigns[key], value)
 	end

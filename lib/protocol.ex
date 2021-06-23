@@ -7,7 +7,7 @@ defmodule Geminex.Protocol do
 	end
 
 	def content(socket, status, meta, content) do
-		@tcp.send(socket, [status(status), meta || [], "\r\n", content])
+		@tcp.send(socket, [status(status), meta || [], "\r\n", content || ""])
 		@tcp.close(socket)
 	end
 
