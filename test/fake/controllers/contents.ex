@@ -5,6 +5,10 @@ defmodule Geminex.Fake.Controllers.Contents do
 		Conn.file(conn, "test/fake/files/missing")
 	end
 
+	def text_file(conn, %{"type" => type}) do
+		Conn.file(conn, "test/fake/files/hello.txt", type)
+	end
+
 	def text_file(conn, _params) do
 		Conn.file(conn, "test/fake/files/hello.txt")
 	end

@@ -24,6 +24,7 @@ defmodule Geminex.Tests.Integration do
 
 	test "sendfile" do
 		request("/contents/text_file") |> assert_meta("") |> assert_status(20) |> assert_body("hello\n")
+		request("/contents/text_file?type=over/9000") |> assert_meta("over/9000") |> assert_status(20) |> assert_body("hello\n")
 		request("/contents/text_file?found=N") |> assert_meta("not found") |> assert_status(40)
 	end
 end
