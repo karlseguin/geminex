@@ -1,4 +1,20 @@
 defmodule Geminex.Router do
+	@moduledoc """
+	The router controls how requests are routed. Since Gemini requests are simple,
+	routing is based solely on the request path.
+
+	Associating a path with an action is done by calling `route/3` and providing
+	the path to match, the module which acts as the controller, and the name of
+	the action (as an atom):
+
+			route "/", My.App.Controller.Home, :home
+
+	Routes can also take parameters:
+
+			route "/post/:id", My.App.Controller.Post, :show
+			route "/user/:user_id/books/:book_id", My.App.Controller.User, :show_user_book
+	"""
+
 	defmacro __using__(_opts) do
 		quote do
 			import Geminex.Router, only: [route: 3]
@@ -13,6 +29,9 @@ defmodule Geminex.Router do
 		end
 	end
 
+	@doc """
+	Routes request using the given `path` to the specific controller and function.
+	"""
 	defmacro route(path, controller, action) do
 		case String.contains?(path, ":") do
 			true -> create_route_for_parts(path, controller, action)
