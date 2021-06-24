@@ -73,6 +73,8 @@ defmodule Geminex.Acceptor do
 				:telemetry.execute([:geminex, :read, :invalid], %{count: 1})
 				Geminex.Protocol.error(socket, 40, "invalid request")
 		end
+	after
+		@tcp.close(socket)
 	end
 
 	defp read_request_line(socket) do

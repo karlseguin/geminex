@@ -11,4 +11,6 @@ defmodule Geminex.Fake.Router do
 	route "/roles/2cap", Controllers.Roles, :two_controller_and_action_plug
 	route "/roles/halt_plug", Controllers.Roles, :halt_plug
 	route "/roles/halt_plug2", Controllers.Roles, :halt_plug2
+
+	route "/contents/text_file", Controllers.Contents, :text_file
 end

@@ -24,8 +24,11 @@ defmodule Geminex.Router do
 				fast_match(conn.uri.path, conn, conn.params)
 			end
 
-			def not_found(conn, params), do: :not_found
-			defoverridable [not_found: 2]
+			def not_found(conn), do: Geminex.Conn.error(conn, "40", "not found")
+			defoverridable [not_found: 1]
+
+			def error(conn, _err), do: Geminex.Conn.error(conn, "50", "server error")
+			defoverridable [error: 2]
 		end
 	end
 
@@ -78,8 +81,8 @@ defmodule Geminex.Router do
 			end
 
 			# no parts match was available, all
-			defp parts_match(_, conn, params) do
-				not_found(conn, params)
+			defp parts_match(_, conn, _params) do
+				not_found(conn)
 			end
 		end
 	end

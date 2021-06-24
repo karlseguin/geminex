@@ -21,4 +21,9 @@ defmodule Geminex.Tests.Integration do
 		request("/roles/halt_plug") |> assert_meta("halt-1")
 		request("/roles/halt_plug2") |> assert_meta("halt-17")
 	end
+
+	test "sendfile" do
+		request("/contents/text_file") |> assert_meta("") |> assert_status(20) |> assert_body("hello\n")
+		request("/contents/text_file?found=N") |> assert_meta("not found") |> assert_status(40)
+	end
 end

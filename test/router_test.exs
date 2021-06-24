@@ -22,10 +22,11 @@ defmodule Geminex.Tests.Router do
 	end
 
 	test "not found" do
-		assert test_match("invalid") == :not_found
+		assert test_match("invalid").response.status == "40"
 	end
 
 	defp test_match(path) do
-		dispatch(%{uri: %{path: path}, params: %{}, halt: false})
+		conn = Geminex.Conn.new(:not_a_socket, path)
+		dispatch(conn)
 	end
 end

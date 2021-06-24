@@ -1,10 +1,10 @@
 defmodule Geminex.Controller do
-	alias Geminex.Conn
-	import Geminex.Conn
 
 	defmacro __using__(_) do
 		quote do
-			import Geminex.Controller
+			alias Geminex.Conn
+			import Geminex.Controller, only: [plug: 2]
+
 			@__geminex_plugs %{}
 			@before_compile Geminex.Controller
 		end
@@ -65,25 +65,5 @@ defmodule Geminex.Controller do
 		quote location: :keep do
 			plug unquote(plug), unquote(opts) when action == :"*"
 		end
-	end
-
-	def halt(conn) do
-		%Conn{conn | halt: true}
-	end
-
-	def meta(conn, meta) do
-		%Conn{conn | response: response(conn.response, meta: meta)}
-	end
-
-	def status(conn, status) do
-		%Conn{conn | response: response(conn.response, status: status)}
-	end
-
-	def body(conn, body) do
-		%Conn{conn | response: response(conn.response, body: body)}
-	end
-
-	def content(conn, body, status \\ 20) do
-		%Conn{conn | response: response(conn.response, body: body, status: status)}
 	end
 end

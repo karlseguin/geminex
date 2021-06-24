@@ -38,6 +38,13 @@ defmodule My.App.Router do
 end
 ```
 
+The router can optionally implement `not_found/1` and/or `error/2`. The default implementation are:
+
+```elixir
+def not_found(conn), do: Geminex.Conn.error(conn, "40", "not found")
+def error(conn, _err), do: Geminex.Conn.error(conn, "50", "server error")
+```
+
 ### Controllers
 Create your controllers. Currently, controllers can only return text. More advanced support (files, templates) is planned.
 
@@ -46,13 +53,13 @@ defmodule My.App.Controllers.Posts do
   use Geminex.Controller
 
   def index(conn, params) do
-    content(conn, "hello world")
+    Conn.content(conn, "hello world")
   end
 
   def show(conn, %{"id" => id} = param) do
     case Post.load(id) do
-      nil -> not_found(conn)
-      post -> content(conn, post)
+      nil -> Conn.error(conn, 40, "not found")
+      post -> Conn.content(conn, post)
     end
   end
 end
