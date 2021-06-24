@@ -10,8 +10,6 @@ defmodule Geminex.Acceptor do
 		@tcp :ssl
 	end
 
-	alias Geminex.Conn
-
 	def child_spec(opts) do
 		{id, opts} = Keyword.pop(opts, :id)
 		%{
@@ -59,7 +57,7 @@ defmodule Geminex.Acceptor do
 	end
 
 	defp connected(socket) do
-		with {:ok, line} <- read_request_line(socket),
+		with {:ok, line} <- read_request_line(),
 		     len <- byte_size(line) - 2,
 		     true <- len > 0 || :invalid_request,
 		     <<line::bytes-size(len), "\r\n">> <- line
@@ -77,7 +75,7 @@ defmodule Geminex.Acceptor do
 		@tcp.close(socket)
 	end
 
-	defp read_request_line(socket) do
+	defp read_request_line() do
 		receive do
 			{:tcp, _socket, line} -> {:ok, line}
 			{:tcp_closed, _socket} -> {:error, :closed}

@@ -12,10 +12,12 @@ defmodule Geminex do
 		Supervisor.start_link(__MODULE__, opts)
 	end
 
-	def init(_opts) do
+	def init(opts) do
 		# make sure this exists earlier
-		port = Keyword.get(@config, :port, 1965)
-		ip = @config |> Keyword.get(:ip, "0.0.0.0") |> String.to_charlist()
+		config = Keyword.merge(@config, opts)
+
+		port = Keyword.get(config, :port, 1965)
+		ip = config |> Keyword.get(:ip, "0.0.0.0") |> String.to_charlist()
 
 		address = case :inet.parse_address(ip) do
 			{:ok, address} -> address
@@ -30,7 +32,7 @@ defmodule Geminex do
 			active: :once,
 			packet: :line,
 			reuseaddr: true,
-		] ++ ssl_options(@config[:ssl])
+		] ++ ssl_options(config[:ssl])
 
 		{:ok, socket} = @tcp.listen(port, opts)
 		opts = [socket: socket]

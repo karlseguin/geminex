@@ -76,13 +76,13 @@ defmodule My.App.Controllers.Posts do
 
   plug My.App.Plugs.Validate, [page: [:int, default: 1]] when action == :index
   def index(conn, params) do
-    content(conn, "hello world")
+    Conn.content(conn, "hello world")
   end
 
   def show(conn, %{"id" => id} = param) do
     case Post.load(id) do
-      nil -> not_found(conn)
-      post -> content(conn, post)
+      nil -> Conn.error(conn, 40, "not_found")
+      post -> Conn.content(conn, post)
     end
   end
 end

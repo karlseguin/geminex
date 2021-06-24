@@ -1,6 +1,5 @@
 defmodule Geminex.Conn do
 	alias __MODULE__
-	alias Geminex.Protocol
 
 	@enforce_keys [
 		# The full URI (https://hexdocs.pm/elixir/URI.html)
@@ -76,12 +75,18 @@ defmodule Geminex.Conn do
 	end
 
 	@doc """
-	Will send the content of the file at `path` as the response
+	Will send the content of the file at `path` as the response. When
+	doing TLS termination, this reads the contents of the file and then writes
+	it to the socket. When not doing TLS termination, sendfile(2) will be used
+	if available.
 	"""
 	def file(conn, path), do: %Conn{conn | response: %{conn.response | body: {:file, path}}}
 
 	@doc """
-	Will send the content of the file at `path` as the response with the given meta data
+	Will send the content of the file at `path` as the response with the given meta data.
+	When doing TLS termination, this reads the contents of the file and then writes
+	it to the socket. When not doing TLS termination, sendfile(2) will be used
+	if available.
 	"""
 	def file(conn, path, meta) do
 		%Conn{conn | response: %{conn.response | body: {:file, path}, meta: meta}}

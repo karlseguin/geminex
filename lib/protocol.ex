@@ -11,11 +11,30 @@ defmodule Geminex.Protocol do
 		@tcp.send(socket, [header(status, meta), content || ""])
 	end
 
-	# TODO: If we're not in TLS, we can use :file.sendfile
-	# TODO: If we ARE in TLS, it's possible we can use kernel-support TLS+sendfile
-	def sendfile(socket, status, meta, file) do
-		with {:ok, data} <- File.read(file) do
-			@tcp.send(socket, [header(status, meta), data])
+	if @tcp == :gen_tcp do
+
+		def sendfile(socket, status, meta, file) do
+			with {:ok, fd} <- :file.open(file, [:raw, :read, :binary]) do
+				sendfd(socket, status, meta, fd)
+			end
+		end
+
+		defp sendfd(socket, status, meta, fd) do
+			@tcp.send(socket, header(status, meta))
+			case :file.sendfile(fd, socket, 0, 0, []) do
+				{:ok, _} -> :ok
+				err -> err
+			end
+		after
+			:file.close(fd)
+		end
+
+	else
+		# TODO: If we are in TLS, it's possible we can use kernel-support TLS+sendfile
+		def sendfile(socket, status, meta, file) do
+			with {:ok, data} <- File.read(file) do
+				@tcp.send(socket, [header(status, meta), data])
+			end
 		end
 	end
 
