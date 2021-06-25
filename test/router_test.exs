@@ -22,7 +22,7 @@ defmodule Geminex.Tests.Router do
 	end
 
 	test "not found" do
-		assert test_match("invalid").response.status == "40"
+		assert test_match("invalid").response.status == "51"
 	end
 
 	defp test_match(path) do

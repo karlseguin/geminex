@@ -66,10 +66,10 @@ defmodule Geminex.Acceptor do
 		else
 			:timeout ->
 				:telemetry.execute([:geminex, :read, :timeout], %{count: 1})
-				Geminex.Protocol.error(socket, 40, "read timeout")
+				Geminex.Protocol.error(socket, "59", "read timeout")
 			_ ->
 				:telemetry.execute([:geminex, :read, :invalid], %{count: 1})
-				Geminex.Protocol.error(socket, 40, "invalid request")
+				Geminex.Protocol.error(socket, "59", "invalid request")
 		end
 	after
 		@tcp.close(socket)

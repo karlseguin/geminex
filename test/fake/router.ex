@@ -4,6 +4,9 @@ defmodule Geminex.Fake.Router do
 	alias Geminex.Fake.Controllers
 
 	route "/users", Controllers.Users, :index
+	route "/users/exit", Controllers.Users, :exit
+	route "/users/raise", Controllers.Users, :raise
+	route "/users/throw", Controllers.Users, :throw
 	route "/users/:id", Controllers.Users, :show
 	route "/users/:id/delete", Controllers.Users, :delete
 	route "/users/:id/delete_sensitive", Controllers.Users, :delete_sensitive

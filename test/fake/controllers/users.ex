@@ -9,6 +9,10 @@ defmodule Geminex.Fake.Controllers.Users do
 		Conn.content(conn, "users-show-#{params["id"]}-#{params["format"]}")
 	end
 
+	def exit(_conn, _params), do: exit("exitted")
+	def raise(_conn, _params), do: raise("raised")
+	def throw(_conn, _params), do: throw("thrown")
+
 	input [prompt: "are you sure?"] when action == :delete
 	def delete(conn, params) do
 		Conn.content(conn, "users-delete-#{params["id"]}-#{conn.input}")

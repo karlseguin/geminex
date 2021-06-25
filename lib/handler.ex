@@ -7,7 +7,14 @@ defmodule Geminex.Handler do
 
 	def execute(socket, request_line) do
 		conn = Conn.new(socket, request_line)
-		post_execute(@router.dispatch(conn), true)
+		try do
+			post_execute(@router.dispatch(conn), true)
+		rescue
+			err -> handle_error(conn, err, true)
+		catch
+			err -> handle_error(conn, err, true)
+			:exit, err -> handle_error(conn, err, true)
+		end
 	end
 
 	defp post_execute(conn, initial?) do
@@ -20,18 +27,17 @@ defmodule Geminex.Handler do
 		end
 	end
 
-	# intial error handling fail, break the loop
+	# This is a catch-all. The error handler defined in the Router (either the
+	# built-in one or the application-specific one) has failed. We'll try to
+	# get a reply to the server anyways
 	defp handle_error(conn, :not_found, false) do
-		Protocol.error(conn.socket, "40", "not found")
-	end
-
-	defp handle_error(conn, :server_error, false) do
-		Protocol.error(conn.socket, "50", "server error")
+		Logger.error(%{source: "geminex fallback not found", conn: conn})
+		Protocol.error(conn.socket, "51", "not found")
 	end
 
 	defp handle_error(conn, err, false) do
-		Logger.error("error in error handlers", inspect(err))
-		Protocol.error(conn.socket, "59", "server error (loop)")
+		Logger.error(%{source: "geminex fallback error handler", conn: conn, error: err})
+		Protocol.error(conn.socket, "40", "server error")
 	end
 
 	defp handle_error(conn, :not_found, true) do

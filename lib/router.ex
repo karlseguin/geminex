@@ -24,10 +24,14 @@ defmodule Geminex.Router do
 				fast_match(conn.uri.path, conn, conn.params)
 			end
 
-			def not_found(conn), do: Geminex.Conn.error(conn, "40", "not found")
+			def not_found(conn), do: Geminex.Conn.error(conn, "51", "not found")
 			defoverridable [not_found: 1]
 
-			def error(conn, _err), do: Geminex.Conn.error(conn, "50", "server error")
+			def error(conn, err) do
+				require Logger
+				Logger.error(%{source: "geminex default error handler", conn: conn, error: err})
+				Geminex.Conn.error(conn, "40", "server error")
+			end
 			defoverridable [error: 2]
 		end
 	end

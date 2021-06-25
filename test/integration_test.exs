@@ -1,5 +1,6 @@
 defmodule Geminex.Tests.Integration do
 	use Geminex.Tests
+	import ExUnit.CaptureLog
 
 	test "basic requets" do
 		request("/users") |> assert_status(20) |> assert_meta("") |> assert_body("users-index-")
@@ -33,6 +34,26 @@ defmodule Geminex.Tests.Integration do
 	test "sendfile" do
 		request("/contents/text_file") |> assert_meta("") |> assert_status(20) |> assert_body("hello\n")
 		request("/contents/text_file?type=over/9000") |> assert_meta("over/9000") |> assert_status(20) |> assert_body("hello\n")
-		request("/contents/text_file?found=N") |> assert_meta("not found") |> assert_status(40)
+		request("/contents/text_file?found=N") |> assert_meta("not found") |> assert_status(51)
+	end
+
+	test "handles raise" do
+		logged = capture_log(fn ->
+			request("/users/exit") |> assert_meta("server error") |> assert_status(40)
+		end)
+		assert logged =~ "geminex default error handler"
+		assert logged =~ "exitted"
+
+		logged = capture_log(fn ->
+			request("/users/raise") |> assert_meta("server error") |> assert_status(40)
+		end)
+		assert logged =~ "geminex default error handler"
+		assert logged =~ "%RuntimeError{message: \"raised\"}"
+
+		logged = capture_log(fn ->
+			request("/users/throw") |> assert_meta("server error") |> assert_status(40)
+		end)
+		assert logged =~ "geminex default error handler"
+		assert logged =~ "thrown"
 	end
 end
