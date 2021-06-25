@@ -5,6 +5,8 @@ defmodule Geminex.Fake.Router do
 
 	route "/users", Controllers.Users, :index
 	route "/users/:id", Controllers.Users, :show
+	route "/users/:id/delete", Controllers.Users, :delete
+	route "/users/:id/delete_sensitive", Controllers.Users, :delete_sensitive
 
 	route "/roles/cp", Controllers.Roles, :controller_plug
 	route "/roles/cap", Controllers.Roles, :controller_and_action_plug

@@ -3,7 +3,7 @@ defmodule Geminex.Controller do
 	defmacro __using__(_) do
 		quote do
 			alias Geminex.Conn
-			import Geminex.Controller, only: [plug: 2]
+			import Geminex.Controller, only: [plug: 2, input: 1]
 
 			@__geminex_plugs %{}
 			@before_compile Geminex.Controller
@@ -37,6 +37,12 @@ defmodule Geminex.Controller do
 		end
 
 		[plugs, default]
+	end
+
+	defmacro input(opts) do
+		quote do
+			plug(Geminex.Plugs.Input, unquote(opts))
+		end
 	end
 
 	defmacro plug(plug, {:when, _, [opts, {:==, _, [{:action, _, _}, action]}]}) when is_atom(action) do

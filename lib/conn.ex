@@ -18,7 +18,11 @@ defmodule Geminex.Conn do
 		:assigns,
 
 		# The resposne object
-		:response
+		:response,
+
+		# String which is set when browser is responding to an input request
+		# (status codes 10 or 11)
+		:input
 	]
 	defstruct @enforce_keys
 
@@ -35,7 +39,7 @@ defmodule Geminex.Conn do
 		end
 
 		response = %Response{body: nil, meta: nil, status: nil}
-		%Conn{uri: uri, halt: false, socket: socket, params: params, response: response, assigns: []}
+		%Conn{uri: uri, halt: false, socket: socket, params: params, response: response, assigns: [], input: nil}
 	end
 
 	@doc """
@@ -61,6 +65,11 @@ defmodule Geminex.Conn do
 	Sets the status portion of ther reponse.
 	"""
 	def status(conn, status), do: %Conn{conn | response: %{conn.response | status: status}}
+
+	@doc """
+	Sets the status and meta portion of ther reponse.
+	"""
+	def status_meta(conn, status, meta), do: %Conn{conn | response: %{conn.response | status: status, meta: meta}}
 
 	@doc """
 	Sets the content of a response to an binary or iolist.

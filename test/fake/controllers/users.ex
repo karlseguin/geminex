@@ -8,4 +8,14 @@ defmodule Geminex.Fake.Controllers.Users do
 	def show(conn, params) do
 		Conn.content(conn, "users-show-#{params["id"]}-#{params["format"]}")
 	end
+
+	input [prompt: "are you sure?"] when action == :delete
+	def delete(conn, params) do
+		Conn.content(conn, "users-delete-#{params["id"]}-#{conn.input}")
+	end
+
+	input [prompt: "are you sure??", sensitive: true] when action == :delete_sensitive
+	def delete_sensitive(conn, params) do
+		Conn.content(conn, "users-delete_sensitive-#{params["id"]}-#{conn.input}")
+	end
 end

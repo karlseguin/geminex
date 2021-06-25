@@ -108,3 +108,16 @@ defmodule My.App.Plugs.Validate do
   end
 end
 ```
+
+### Input
+A built-in plug exists to deal with input requests (status code 10 and 11):
+
+```
+input [prompt: "Enter your search", sensitive: false] when action == :search
+def search(conn, _params) do
+  # This action will only execute when conn.input != nil
+end
+```
+
+When `sensitive` is false (default), status code 10 is used. When `sensitive` is true, status code 11 is used.
+

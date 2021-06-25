@@ -22,6 +22,14 @@ defmodule Geminex.Tests.Integration do
 		request("/roles/halt_plug2") |> assert_meta("halt-17")
 	end
 
+	test "prompt" do
+		request("/users/leto/delete") |>  assert_status(10) |> assert_meta("are you sure?")
+		request("/users/paul/delete_sensitive") |> assert_status(11) |> assert_meta("are you sure??")
+
+		request("/users/leto/delete?yes") |> assert_status(20) |> assert_body("users-delete-leto-yes")
+		request("/users/leto/delete_sensitive?si%20si") |> assert_status(20) |> assert_body("users-delete_sensitive-leto-si si")
+	end
+
 	test "sendfile" do
 		request("/contents/text_file") |> assert_meta("") |> assert_status(20) |> assert_body("hello\n")
 		request("/contents/text_file?type=over/9000") |> assert_meta("over/9000") |> assert_status(20) |> assert_body("hello\n")
