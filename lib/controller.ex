@@ -11,25 +11,27 @@ defmodule Geminex.Controller do
 	end
 
 	defmacro __before_compile__(_env) do
-		plugs = Module.get_attribute(__CALLER__.module, :__geminex_plugs)
-		plugs = Enum.map(plugs, fn
-			{action, [{mod, opts}]} ->
-				quote location: :keep do
-					def __geminex_plugs(conn, unquote(action)), do: unquote(mod).call(conn, unquote(opts))
+		caller = __CALLER__.module
+		conn = Macro.var(:conn, caller)
+		plugs = Module.get_attribute(caller, :__geminex_plugs)
+
+		plugs = Enum.map(plugs, fn {action, plugs} ->
+			plugs = Enum.reverse(plugs)
+			{plugs, target_conn, _} =
+				Enum.reduce(plugs, {[], conn, 1}, fn {mod, opts}, {ast, conn, idx} ->
+					target_conn = Macro.var(String.to_atom("conn_#{idx}"), caller)
+					{ast ++ [quote do
+						%{halt: false} = unquote(target_conn) <- unquote(mod).call(unquote(conn), unquote(opts))
+					end], target_conn, idx + 1}
+				end)
+
+			plugs = {:with, [], plugs ++ [[do: var!(target_conn)]]}
+
+			quote location: :keep do
+				def __geminex_plugs(unquote(conn), unquote(action)) do
+					unquote(plugs)
 				end
-			{action, plugs} ->
-				plugs = Enum.reverse(plugs)
-				quote location: :keep do
-					def __geminex_plugs(conn, unquote(action)) do
-						Enum.reduce_while(unquote(plugs), conn, fn {mod, opts}, conn ->
-							conn = apply(mod, :call, [conn, opts])
-							case conn.halt do
-								true -> {:halt, conn}
-								false -> {:cont, conn}
-							end
-						end)
-					end
-				end
+			end
 		end)
 
 		default = quote do
