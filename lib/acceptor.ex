@@ -1,5 +1,6 @@
 defmodule Geminex.Acceptor do
 	use Task
+	require Logger
 
 	@config Application.compile_env(:geminex, :server)
 	@read_timeout @config[:read_timeout] || 10_000
@@ -45,7 +46,12 @@ defmodule Geminex.Acceptor do
 					pid = spawn fn ->
 						case :ssl.handshake(client_socket, @read_timeout) do
 							{:ok, client_socket} -> connected(client_socket)
+							{:error, {:options, err}} ->
+								Logger.error(%{source: "ssl handshake options", err: err})
+								:telemetry.execute([:geminex, :ssl_handshake_error], %{count: 1}, %{error: err})
+								:ssl.close(client_socket)
 							{:error, err} ->
+								Logger.info(%{source: "ssl handshake", err: err})
 								:telemetry.execute([:geminex, :ssl_handshake_error], %{count: 1}, %{error: err})
 								:ssl.close(client_socket)
 						end
