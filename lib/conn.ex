@@ -22,7 +22,10 @@ defmodule Geminex.Conn do
 
 		# String which is set when browser is responding to an input request
 		# (status codes 10 or 11)
-		:input
+		:input,
+
+		# The original request line
+		:request_line
 	]
 	defstruct @enforce_keys
 
@@ -39,7 +42,16 @@ defmodule Geminex.Conn do
 		end
 
 		response = %Response{body: nil, meta: nil, status: nil}
-		%Conn{uri: uri, halt: false, socket: socket, params: params, response: response, assigns: [], input: nil}
+		%Conn{
+			uri: uri,
+			input: nil,
+			halt: false,
+			assigns: [],
+			socket: socket,
+			params: params,
+			response: response,
+			request_line: request_line
+		}
 	end
 
 	@doc """
