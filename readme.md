@@ -9,19 +9,49 @@ Define a config for `:geminex, :server`:
 
 ```elixir
 config :geminex, :server, [
-    port: 1965, 
-    ip: "0.0.0.0",
-    read_timeout: 10_000, # ms
-    router: My.App.Router,
-    ssl: [
-        ca: "root.crt",
-        key: "site.key",
-        cert: "site.crt"
-    ]
+  port: 1965, 
+  ip: "0.0.0.0",
+  read_timeout: 10_000, # ms
+  router: My.App.Router,
+  ssl: [
+    ca: "root.crt",
+    key: "site.key",
+    cert: "site.crt"
+  ]
 ]
 ```
 
-Only `router` is required. However, the three `ssl` values are required for TLS, which Gemini requires. The only reason to omit the `ssl` values is for local development or when offloading TLS-termination (e.g. with haproxy).
+Strictly speaking, only `router` is required. However, the three `ssl` values are required for TLS, which Gemini requires. The only reason to omit the `ssl` values is for local development or when offloading TLS-termination (e.g. with haproxy).
+
+SNI is also supported by providing a `hosts` map to `ssl`:
+```
+  ssl: [
+    ca: "root.crt",
+    hosts: %{
+      "site1.com" => [
+        key: "site1.key",
+        cert: "site1.crt"]
+      ],
+      "site2.com" => [
+        key: "site2.key",
+        cert: "site2.crt"]
+      ]
+    }
+  ]
+```
+
+### Starting
+Add `Geminex` to your supervisor tree, e.g.:
+
+```elixir
+  children = [
+    ...
+    Geminex,
+    ...
+  ]
+
+  Supervisor.start_link(children, [strategy: :one_for_one, name: __MODULE__])
+```
 
 ### Router
 Create your router:
@@ -64,6 +94,7 @@ defmodule My.App.Controllers.Posts do
   end
 end
 ```
+
 
 ### Plugs
 Controller-level and action-level plugs can be defined:
